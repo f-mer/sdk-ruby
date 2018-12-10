@@ -16,7 +16,7 @@ module Cloudevents
         event.event_time = request.fetch_header("HTTP_CE_EVENTTIME") { nil }
         event.schema_url = request.fetch_header("HTTP_CE_SCHEMAURL") { nil }
         event.content_type = request.content_type
-        event.data = block ? block.call(request.body) : request.body.read
+        event.data = yield request.body
         event
       end
 

@@ -12,7 +12,7 @@ module Cloudevents
         ])
       end
 
-      def from_request(request)
+      def from_request(request, &block)
         raise ArgumentError, "request can not be nil" if request.nil?
 
         converter = @converters.find do |converter|
@@ -20,7 +20,7 @@ module Cloudevents
         end
 
         if converter
-          converter.read(Event.new, request) { |io| io.read }
+          converter.read(Event.new, request, &block)
         else
           raise ContentTypeNotSupportedError
         end

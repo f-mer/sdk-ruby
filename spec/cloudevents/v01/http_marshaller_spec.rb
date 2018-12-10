@@ -57,7 +57,7 @@ describe Cloudevents::V01::HTTPMarshaller do
             input: "Hello CloudEvents!",
           ))
           principal = Cloudevents::V01::HTTPMarshaller.default
-          event = principal.from_request(request)
+          event = principal.from_request(request) { |io| io.read }
 
           event.content_type.must_equal("application/json")
           event.cloud_events_version.must_equal("1")
@@ -86,7 +86,7 @@ describe Cloudevents::V01::HTTPMarshaller do
             input: "Hello CloudEvents!",
           ))
           principal = Cloudevents::V01::HTTPMarshaller.default
-          event = principal.from_request(request)
+          event = principal.from_request(request) { |io| io.read }
 
           event.content_type.must_equal("application/json")
           event.cloud_events_version.must_equal("1")
@@ -118,7 +118,7 @@ describe Cloudevents::V01::HTTPMarshaller do
             input: payload,
           ))
           principal = Cloudevents::V01::HTTPMarshaller.default
-          event = principal.from_request(request)
+          event = principal.from_request(request) { |io| io.read }
 
           event.content_type.must_equal("application/cloudevents+json")
           event.cloud_events_version.must_equal("1")
