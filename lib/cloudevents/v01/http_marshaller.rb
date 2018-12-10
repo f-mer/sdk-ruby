@@ -2,7 +2,9 @@ module Cloudevents
   module V01
     class HTTPMarshaller
       def initialize(converters = [])
-        @converters = converters
+        @converters = Hash[converters.map do |converter|
+                             [converter.type, converter]
+                           end]
       end
 
       def self.default
@@ -15,7 +17,7 @@ module Cloudevents
       def from_request(request, &block)
         raise ArgumentError, "request can not be nil" if request.nil?
 
-        converter = @converters.find do |converter|
+        converter = @converters.values.find do |converter|
           converter.can_read?(request.media_type)
         end
 
@@ -23,6 +25,13 @@ module Cloudevents
           converter.read(Event.new, request, &block)
         else
           raise ContentTypeNotSupportedError
+        end
+      end
+      def to_request(event, converter_type, &block)
+        if converter = @converters[content_type]
+          converter.write(event, &block)
+        else
+          raise NoSuchConverter
         end
       end
     end

@@ -7,6 +7,9 @@ module Cloudevents
         "application/octet-stream",
       ]
 
+      def type
+        :binary
+      end
       def read(event, request, &block)
         event.cloud_events_version = request.fetch_header("HTTP_CE_CLOUDEVENTSVERSION")
         event.event_type = request.fetch_header("HTTP_CE_EVENTTYPE")
@@ -18,6 +21,20 @@ module Cloudevents
         event.content_type = request.content_type
         event.data = yield request.body
         event
+      end
+
+      def write(event)
+        headers = {
+          "CE-CloudEventsVersion" => event.cloud_events_version,
+          "CE-EventType" => event.event_type,
+          "CE-EventTypeVersion" => event.event_type_version,
+          "CE-Source" => event.source,
+          "CE-EventID" => event.event_id,
+          "CE-EventTime" => event.event_time,
+          "CE-SchemaUrl" => event.schema_url,
+        }
+
+        [headers, event.data]
       end
 
       def can_read?(media_type)
