@@ -109,7 +109,8 @@ describe Cloudevents::V01::HTTPMarshaller do
                 "cloudEventsVersion": "1",
                 "eventType": "com.example.someevent",
                 "source":  "/mycontext",
-                "eventID": "1234-1234-1234"
+                "eventID": "1234-1234-1234",
+                "data": "Hello CloudEvents!"
               }
             JSON
           request = Rack::Request.new(Rack::MockRequest.env_for(
@@ -128,8 +129,19 @@ describe Cloudevents::V01::HTTPMarshaller do
           event.event_type_version.must_be_nil
           event.event_time.must_be_nil
           event.schema_url.must_be_nil
-          event.data.must_be_nil
+          event.data.must_equal("Hello CloudEvents!")
         end
+      end
+    end
+  end
+
+  describe "#to_request" do
+    context "request is nil" do
+      it "raises" do
+        principal = Cloudevents::V01::HTTPMarshaller.default
+
+        -> { principal.to_request(nil, :binary) { |data| data } }.must_raise(ArgumentError)
+        -> { principal.to_request(nil, :structured) { |data| data } }.must_raise(ArgumentError)
       end
     end
   end

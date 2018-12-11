@@ -47,15 +47,14 @@ describe Cloudevents::V01::BinaryConverter do
       converter = Cloudevents::V01::BinaryConverter.new
       headers, data = converter.write(event)
 
-      headers.must_equal({
-        "CE-CloudEventsVersion" => "1",
-        "CE-EventType" => "com.example.someevent",
-        "CE-EventTypeVersion" => "1.1",
-        "CE-Source" => "/mycontext",
-        "CE-EventID" => "1234-1234-1234",
-        "CE-EventTime" => "2018-04-05T03:56:24Z",
-        "CE-SchemaUrl" => "http://example.com/schema",
-      })
+      headers["Content-Type"].must_equal("application/json")
+      headers["CE-CloudEventsVersion"].must_equal("1")
+      headers["CE-EventType"].must_equal("com.example.someevent")
+      headers["CE-EventTypeVersion"].must_equal("1.1")
+      headers["CE-Source"].must_equal("/mycontext")
+      headers["CE-EventID"].must_equal("1234-1234-1234")
+      headers["CE-EventTime"].must_equal("2018-04-05T03:56:24Z")
+      headers["CE-SchemaUrl"].must_equal("http://example.com/schema")
       data.must_equal("Hello CloudEvents!")
     end
   end
