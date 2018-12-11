@@ -23,8 +23,9 @@ module Cloudevents
         event
       end
 
-      def write(event)
+      def write(event, &block)
         headers = {
+          "Content-Type" => event.content_type,
           "CE-CloudEventsVersion" => event.cloud_events_version,
           "CE-EventType" => event.event_type,
           "CE-EventTypeVersion" => event.event_type_version,
@@ -34,7 +35,7 @@ module Cloudevents
           "CE-SchemaUrl" => event.schema_url,
         }
 
-        [headers, event.data]
+        [headers, (yield event.data)]
       end
 
       def can_read?(media_type)
