@@ -1,10 +1,16 @@
 module Cloudevents
   module V01
     class JSONConverter
+      # media types that can be read by this converter
       SUPPORTED_MEDIA_TYPES = [
         "application/cloudevents+json",
       ]
 
+      # @param event [Event]
+      # @param request [Rack::Request]
+      # @yieldparam io [#read]
+      # @yieldreturn serialized data
+      # @return [Event]
       def read(event, request, &block)
         json = JSON.parse(request.body.read)
         event.cloud_events_version = json["cloudEventsVersion"]
@@ -19,6 +25,10 @@ module Cloudevents
         event
       end
 
+      # @param event [Event]
+      # @yieldparam data
+      # @yieldreturn serialized data
+      # @return [Array(Hash{String => String}, #read)]
       def write(event, &block)
         headers = {
           "Content-Type" => "application/cloudevents+json",
@@ -37,6 +47,8 @@ module Cloudevents
         [headers, data.to_json]
       end
 
+      # @param media_type [String]
+      # @return [Boolean]
       def can_read?(media_type)
         SUPPORTED_MEDIA_TYPES.include?(media_type)
       end

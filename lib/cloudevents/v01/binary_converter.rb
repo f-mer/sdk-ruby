@@ -1,12 +1,18 @@
 module Cloudevents
   module V01
     class BinaryConverter
+      # media types that can be read by this converter
       SUPPORTED_MEDIA_TYPES = [
         "application/json",
         "application/xml",
         "application/octet-stream",
       ]
 
+      # @param event [Event]
+      # @param request [Rack::Request]
+      # @yieldparam io [#read]
+      # @yieldreturn
+      # @return [Event]
       def read(event, request, &block)
         event.cloud_events_version = request.fetch_header("HTTP_CE_CLOUDEVENTSVERSION")
         event.event_type = request.fetch_header("HTTP_CE_EVENTTYPE")
@@ -20,6 +26,10 @@ module Cloudevents
         event
       end
 
+      # @param event [Event]
+      # @yieldparam data
+      # @yieldreturn
+      # @return [Array(Hash{String => String}, #read)]
       def write(event, &block)
         headers = {
           "Content-Type" => event.content_type,
@@ -35,6 +45,8 @@ module Cloudevents
         [headers, (yield event.data)]
       end
 
+      # @param media_type [String]
+      # @return [Boolean]
       def can_read?(media_type)
         SUPPORTED_MEDIA_TYPES.include?(media_type)
       end
