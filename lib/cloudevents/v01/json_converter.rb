@@ -5,10 +5,6 @@ module Cloudevents
         "application/cloudevents+json",
       ]
 
-      def type
-        :structured
-      end
-
       def read(event, request, &block)
         json = JSON.parse(request.body.read)
         event.cloud_events_version = json["cloudEventsVersion"]

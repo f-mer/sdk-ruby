@@ -7,9 +7,6 @@ module Cloudevents
         "application/octet-stream",
       ]
 
-      def type
-        :binary
-      end
       def read(event, request, &block)
         event.cloud_events_version = request.fetch_header("HTTP_CE_CLOUDEVENTSVERSION")
         event.event_type = request.fetch_header("HTTP_CE_EVENTTYPE")
